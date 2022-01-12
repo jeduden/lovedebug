@@ -22,8 +22,6 @@ local _Debug = {
 	history = {''},
 	historyIndex = 1,
 
-	Font = love.graphics.newFont(12),
-	BigFont = love.graphics.newFont(24),
 	Proposals = {},
 	ProposalLocation = _G;
 	Proposal_String = "",
@@ -39,6 +37,9 @@ local _Debug = {
 
 --Settings
 _DebugSettings = {
+	Font = love.graphics.newFont(12),
+	BigFont = love.graphics.newFont(24),
+
 	MultipleErrors = false,
 	OverlayColor = {0, 0, 0},
 
@@ -115,7 +116,7 @@ _Debug.onTop = function()
 	local r, g, b, a = love.graphics.getColor()
 	love.graphics.push()
 	love.graphics.origin()
-	love.graphics.setFont(_Debug.Font)
+	love.graphics.setFont(_DebugSettings.Font)
 
 	local p,e,err,index,msg = {},{}
 	for i,v in ipairs(_Debug.onTopFeed) do
@@ -138,22 +139,22 @@ _Debug.onTop = function()
 
 	if p then
 		--draw prints
-		love.graphics.setScissor(0,0,love.graphics.getWidth()/2,2+ 5*((#p-1) > -1 and #p-1 or 0) + #p*_Debug.Font:getHeight())
+		love.graphics.setScissor(0,0,love.graphics.getWidth()/2,2+ 5*((#p-1) > -1 and #p-1 or 0) + #p*_DebugSettings.Font:getHeight())
 		love.graphics.setColor(127/255, 127/255, 127/255, 64/255)
-		love.graphics.rectangle('fill',0,1,love.graphics.getWidth()/2,2+ 5*((#p-1) > -1 and #p-1 or 0) + #p*_Debug.Font:getHeight())
+		love.graphics.rectangle('fill',0,1,love.graphics.getWidth()/2,2+ 5*((#p-1) > -1 and #p-1 or 0) + #p*_DebugSettings.Font:getHeight())
 		love.graphics.setColor(255, 255, 255, 255)
 		for i,v in ipairs(p) do
-			love.graphics.print(v[1], 5, 2+ 5*(i-1) + (i-1)*_Debug.Font:getHeight())
+			love.graphics.print(v[1], 5, 2+ 5*(i-1) + (i-1)*_DebugSettings.Font:getHeight())
 		end
 	end
 	if e then
 		--draw errors
-		love.graphics.setScissor(love.graphics.getWidth()/2,0,love.graphics.getWidth()/2,2+ 5*((#e-1) > -1 and #e-1 or 0) + #e*_Debug.Font:getHeight())
+		love.graphics.setScissor(love.graphics.getWidth()/2,0,love.graphics.getWidth()/2,2+ 5*((#e-1) > -1 and #e-1 or 0) + #e*_DebugSettings.Font:getHeight())
 		love.graphics.setColor(255, 0, 0, 64)
-		love.graphics.rectangle('fill',love.graphics.getWidth()/2,1,love.graphics.getWidth()/2,2+ 5*((#e-1) > -1 and #e-1 or 0) + #e*_Debug.Font:getHeight())
+		love.graphics.rectangle('fill',love.graphics.getWidth()/2,1,love.graphics.getWidth()/2,2+ 5*((#e-1) > -1 and #e-1 or 0) + #e*_DebugSettings.Font:getHeight())
 		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
 		for i,v in ipairs(e) do
-			love.graphics.print(v[1], love.graphics.getWidth()/2+5, 2+ 5*(i-1) + (i-1)*_Debug.Font:getHeight())
+			love.graphics.print(v[1], love.graphics.getWidth()/2+5, 2+ 5*(i-1) + (i-1)*_DebugSettings.Font:getHeight())
 		end
 	end
 	love.graphics.setScissor()
@@ -184,14 +185,14 @@ _Debug.overlay = function()
 	love.graphics.origin()
 	love.graphics.setStencilTest()
 
-	local fontSize = _Debug.Font:getHeight()
+	local fontSize = _DebugSettings.Font:getHeight()
 	local w = love.graphics.getWidth()
 	local h = love.graphics.getHeight()
 	local R, G, B = unpack(_DebugSettings.OverlayColor)
 	love.graphics.setColor(R, G, B, 220)
 	love.graphics.rectangle("fill", 0, 0, w, h)
 	love.graphics.setColor(255/255, 255/255, 255/255)
-	love.graphics.setFont(_Debug.Font)
+	love.graphics.setFont(_DebugSettings.Font)
 	local count = 0
 	local cutY = 0
 	if h ~= _Debug.lastH then --Did the height of the window change?
@@ -229,12 +230,12 @@ _Debug.overlay = function()
 	love.graphics.setScissor()
 	love.graphics.print(">", 6, h - 27)
 	local input_prefix = _Debug.input:sub(1, _Debug.inputMarker)
-	local input_prefix_width = _Debug.Font:getWidth(input_prefix)
+	local input_prefix_width = _DebugSettings.Font:getWidth(input_prefix)
 	local autocomplete_width = 0
 	local input_suffix = _Debug.input:sub(_Debug.inputMarker + 1)
 	if #_Debug.Proposals > 0 then
-		autocomplete_width = _Debug.Font:getWidth(_Debug.Proposals[_Debug.proposaltoenter])
-		local proposal_prefix_width = _Debug.Font:getWidth(_Debug.Proposal_String)
+		autocomplete_width = _DebugSettings.Font:getWidth(_Debug.Proposals[_Debug.proposaltoenter])
+		local proposal_prefix_width = _DebugSettings.Font:getWidth(_Debug.Proposal_String)
 		love.graphics.setColor(127/255, 127/255, 127/255)
 		love.graphics.print(_Debug.Proposals[_Debug.proposaltoenter], 20 + input_prefix_width, h - 27)
 		love.graphics.setColor(70/255, 70/255, 70/255)
@@ -252,7 +253,7 @@ _Debug.overlay = function()
 	love.graphics.print(input_prefix, 20, h - 27)
 	love.graphics.print(input_suffix, 20 + input_prefix_width + autocomplete_width, h - 27)
 	if (#_Debug.order - _Debug.longestOffset > _Debug.lastRows - 1) then
-		love.graphics.setFont(_Debug.BigFont)
+		love.graphics.setFont(_DebugSettings.BigFont)
 		love.graphics.print("...", w - 30, h - 30)
 	end
 	love.graphics.setColor(r, g, b, a)
